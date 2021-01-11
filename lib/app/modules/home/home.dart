@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:conversor/app/shared/custom_button.dart';
+import 'package:conversor/app/modules/currencies/pages/currency_page.dart';
 import 'package:conversor/app/modules/conversion/pages/conversion_page.dart';
 class Home extends StatefulWidget {
 
@@ -33,7 +34,7 @@ class _HomeState extends State<Home> {
       width: MediaQuery.of(context).size.width,
       onPressed: () => {
         Navigator.push(context, MaterialPageRoute(
-          builder: (_) => ConversionPage()
+          builder: (_) => CurrencyPage()
         )),
       },
     );

@@ -1,8 +1,8 @@
-import 'package:conversor/app/modules/conversion/services/conversion_service.dart';
 import 'package:flutter/material.dart';
 import 'package:conversor/app/shared/custom_button.dart';
 import 'package:conversor/app/shared/custom_text_input.dart';
 import 'package:conversor/app/modules/currencies/services/currency_service.dart';
+import 'package:conversor/app/modules/conversion/services/conversion_service.dart';
 
 class ConversionPage extends StatefulWidget {
 
@@ -42,7 +42,7 @@ class _ConversionPageState extends State<ConversionPage> {
     return Future.value(currencies);
   }
 
-  Future _getConversions(String from, String to) async {
+  Future _getConversions() async {
 
     dynamic conversions = await ConversionService().getConversions();
 
@@ -50,29 +50,54 @@ class _ConversionPageState extends State<ConversionPage> {
       _conversions = conversions;
     });
 
-    return;
+    return conversions;
   }
 
-  Future _convert(String from, String to, double value) async {
+  Future _convert(String from, String to, double amount) async {
+
+    List cv = await _getConversions();
+    dynamic conversionToUSD;
+    dynamic conversionFromUSD;
+    double resultUSD;
 
     if (from != "USD" && to != "USD") {
-      await _getConversions(from, "USD");
+      conversionToUSD = cv.firstWhere((element) {
+        return element.destiny == from;
+      });
+
+      resultUSD = amount / conversionToUSD.value;
+
+      conversionFromUSD = cv.firstWhere((element) {
+        return element.destiny == to;
+      });
+
+      setState(() {
+        _convertedValue = conversionFromUSD.value * resultUSD ;
+      });
+    } 
+    else if (to != "USD"){
+      conversionFromUSD = cv.firstWhere((element) {
+        return element.destiny == from;
+      });
+
+      resultUSD = amount * conversionFromUSD.value;
+
+      setState(() {
+        _convertedValue = resultUSD ;
+      });
+    } else {
+      conversionFromUSD = cv.firstWhere((element) {
+        return element.destiny == from;
+      });
+
+      resultUSD = amount / conversionFromUSD.value;
+
+      setState(() {
+        _convertedValue = resultUSD ;
+      });
     }
 
-    await _getConversions(from, to);
-    dynamic conversionValue;
-
-    _conversions.forEach((element) { 
-      if(element.destiny == to) {
-        conversionValue = element.value;
-      }
-    });
-
-    setState(() {
-      _convertedValue = double.parse(conversionValue) * value ;
-    });
-
-    return double.parse(conversionValue) * value;
+    return _convertedValue;
   }
 
   List<DropdownMenuItem<String>> _buildOptionsCurrencies() {
@@ -161,13 +186,19 @@ class _ConversionPageState extends State<ConversionPage> {
 
     return Text(
       'Valor convertido: ',
+      style: TextStyle(
+        fontSize: 18,
+      ),
     );
   }
 
   Widget _buildResult() {
 
     return Text(
-      _convertedValue ?? '',
+      _convertedValue.toStringAsPrecision(2) ?? '',
+      style: TextStyle(
+        fontSize: 18,
+      ),
     );
   }
 
