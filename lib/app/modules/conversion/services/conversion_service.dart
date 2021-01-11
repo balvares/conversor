@@ -5,9 +5,7 @@ class ConversionService {
 
   Future<List<Conversion>> getConversions() async {
 
-    Map<String, dynamic> response = await ConversionRepository().getConversions();
-
-    Map<String, dynamic> conversions = response['quotes'];
+    Map<String, dynamic> conversions = await ConversionRepository().getConversions();
 
     List<Conversion> conversionsList = [];
     conversions.forEach((key, value) {

@@ -5,9 +5,7 @@ class CurrencyService {
 
   Future getCurrencies() async {
 
-    Map<String, dynamic> response = await CurrencyRepository().getCurrencies();
-
-    Map<String, dynamic> currencies = response['currencies'];
+    Map<String, dynamic> currencies = await CurrencyRepository().getCurrencies();
 
     List<Currency> currenciesList = [];
     currencies.forEach((key, value) {
