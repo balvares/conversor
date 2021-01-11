@@ -42,9 +42,10 @@ class CustomButton extends StatelessWidget {
         disabledColor: Colors.grey,
         disabledTextColor: Colors.white,
         textColor: fontColor ?? Colors.white,
-        color: color ?? Theme.of(context).primaryColor,
+        color: color ?? Color(0xFF20B2AA),
         splashColor: splashColor ?? Colors.white.withOpacity(0.2),
         highlightColor: splashColor ?? Colors.white.withOpacity(0.2),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999.0)),
         child: Text(
           label,
           style: TextStyle(

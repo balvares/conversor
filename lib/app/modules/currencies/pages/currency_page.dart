@@ -1,7 +1,5 @@
-import 'package:conversor/app/modules/currencies/model/currency.dart';
-import 'package:conversor/app/shared/custom_text_input.dart';
-import 'package:feather_icons_flutter/feather_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:conversor/app/modules/currencies/model/currency.dart';
 import 'package:conversor/app/modules/currencies/services/currency_service.dart';
 
 class CurrencyPage extends StatefulWidget {
@@ -15,13 +13,25 @@ class _CurrencyPageState extends State<CurrencyPage> {
   String _currencyFrom = '';
   String _currencyTo = '';
   String filter = 'identifier';
+
   final TextEditingController _searchController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
-    super.initState();
 
+    super.initState();
     _refresh();
+  }
+
+  void _onFail(String err) {
+
+    final SnackBar snackbar = SnackBar(
+      content: Text(err),
+      action: SnackBarAction(label: 'Ok', onPressed: () {}),
+    );
+
+    _scaffoldKey.currentState.showSnackBar(snackbar); 
   }
 
   Future<List> _refresh() async {
@@ -33,23 +43,10 @@ class _CurrencyPageState extends State<CurrencyPage> {
     });
   }
 
-  Widget _buildAppBar() {
-
-    final Text title = Text(
-      'Listagem de moedas',
-      style: TextStyle(color: Colors.white),
-    );
-
-    return AppBar(
-      title: title,
-      backgroundColor: Colors.blue,
-    );
-  }
-
   Future _getCurrencies() async {
 
     dynamic currencies = await CurrencyService().getCurrencies().catchError((onError) {
-      print('Erro ao trazer moedas.');
+      _onFail('Ocorreu um erro ao listar as moedas. Tente novamente mais tarde.');
     });
 
     setState(() {
@@ -177,11 +174,25 @@ class _CurrencyPageState extends State<CurrencyPage> {
     );
   }
 
+   Widget _buildAppBar() {
+
+    final Text title = Text(
+      'Listagem de moedas',
+      style: TextStyle(color: Colors.white),
+    );
+
+    return AppBar(
+      title: title,
+      backgroundColor: Color(0xFF20B2AA),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
       body: _buildBody(),
+      key: _scaffoldKey,
     );
   }
 }

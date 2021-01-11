@@ -205,21 +205,25 @@ class _ConversionPageState extends State<ConversionPage> {
 
   Widget _buildButton() {
 
-    return CustomButton(
-      label: 'Converter', 
-      width: MediaQuery.of(context).size.width,
-      onPressed: () {
-        _validateFields() ?? _convert(_currencyFrom, _currencyTo, double.parse(_originController.text));
-      },
+    return Center(
+      child: CustomButton(
+        label: 'Converter', 
+        width: MediaQuery.of(context).size.width * 0.5,
+        onPressed: () {
+          if(_validateFields()) _convert(_currencyFrom, _currencyTo, double.parse(_originController.text));
+        },
+      ),
     );
   }
 
   Widget _buildResultLabel() {
 
     return Text(
-      'Valor convertido: ',
+      'Resultado da conversão: ',
       style: TextStyle(
         fontSize: 18,
+        color: Colors.white,
+        fontWeight: FontWeight.w700,
       ),
     );
   }
@@ -231,7 +235,28 @@ class _ConversionPageState extends State<ConversionPage> {
     return Text(
       nf.format(_convertedValue) ?? '',
       style: TextStyle(
-        fontSize: 18,
+        fontSize: 24,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildResultBox() {
+
+    return Container(
+      padding: EdgeInsets.all(20),
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        border: Border.all(width: 1, color: Color(0xFF20B2AA)),
+        borderRadius: BorderRadius.circular(10.0),
+        color: Color(0xFF20B2AA),
+      ),
+      child: Column(
+        children: [
+          _buildResultLabel(),
+          SizedBox(height: 20),
+          _buildResult(),
+        ],
       ),
     );
   }
@@ -254,12 +279,7 @@ class _ConversionPageState extends State<ConversionPage> {
           SizedBox(height: 40),
           _buildButton(),
           SizedBox(height: 40),
-          Row(
-            children: [
-              _buildResultLabel(),
-              _convertedValue != null ? _buildResult() : Container(),
-            ],
-          ),
+          _buildResultBox(),
         ],
       ),
     );
@@ -274,7 +294,7 @@ class _ConversionPageState extends State<ConversionPage> {
 
     return AppBar(
       title: title,
-      backgroundColor: Colors.blue,
+      backgroundColor: Color(0xFF20B2AA),
     );
   }
 

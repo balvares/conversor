@@ -14,7 +14,7 @@ class _HomeState extends State<Home> {
 
     return CustomButton(
       height: 100,
-      color: Colors.blue,
+      color: Color(0xFF20B2AA),
       label: 'Abrir Conversor',
       width: MediaQuery.of(context).size.width,
       onPressed: () => {
@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
 
     return CustomButton(
       height: 100,
-      color: Colors.blue,
+      color: Color(0xFF20B2AA),
       label: 'Listagem de Moedas',
       width: MediaQuery.of(context).size.width,
       onPressed: () => {
@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
 
     return AppBar(
       title: title,
-      backgroundColor: Colors.blue,
+      backgroundColor: Color(0xFF20B2AA),
     );
   }
 
