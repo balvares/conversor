@@ -67,7 +67,10 @@ class _CurrencyPageState extends State<CurrencyPage> {
       value: 'identifier',
       groupValue: filter,
       activeColor: Theme.of(context).primaryColor,
-      onChanged: (dynamic value) => setState(() => filter = value),
+      onChanged: (dynamic value) { 
+        setState(() => filter = value);
+        _refresh();
+      },
     );
 
     final Text label = Text(
@@ -107,18 +110,6 @@ class _CurrencyPageState extends State<CurrencyPage> {
 
     Widget wg;
 
-    final Widget label = Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 16.0,
-      ),
-      child: Text(
-        'Ordenar por:',
-        style: Theme.of(context).textTheme.bodyText1.copyWith(
-          color: Colors.black
-        ),
-      ),
-    );
-
     wg = Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -155,7 +146,19 @@ class _CurrencyPageState extends State<CurrencyPage> {
       _buildOptions()
     ];
 
-    _currencies.forEach((element) {
+    final List l = _currencies;
+
+    if (filter == 'identifier') {
+      l.sort((a, b) {
+        return a.identifier.toString().compareTo(b.identifier.toString());
+      });
+    } else {
+      l.sort((a, b) {
+        return a.name.toString().compareTo(b.name.toString());
+      });
+    }
+
+    l.forEach((element) {
       currencies.add(_buildListTile(element.identifier, element.name));
     });
 
@@ -181,5 +184,4 @@ class _CurrencyPageState extends State<CurrencyPage> {
       body: _buildBody(),
     );
   }
-
 }

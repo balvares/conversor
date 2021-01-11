@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:conversor/app/shared/custom_button.dart';
 import 'package:conversor/app/shared/custom_text_input.dart';
@@ -11,14 +12,14 @@ class ConversionPage extends StatefulWidget {
 
 class _ConversionPageState extends State<ConversionPage> {
 
-  final TextEditingController _originController = TextEditingController();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
   List _currencies = [];
   List _conversions = [];
   String _currencyFrom = '';
   String _currencyTo = '';
   double _convertedValue = 0.00;
+
+  final TextEditingController _originController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -27,10 +28,20 @@ class _ConversionPageState extends State<ConversionPage> {
     _getCurrencies();
   }
 
+  void _onFail(String err) {
+
+    final SnackBar snackbar = SnackBar(
+      content: Text(err),
+      action: SnackBarAction(label: 'Ok', onPressed: () {}),
+    );
+
+    _scaffoldKey.currentState.showSnackBar(snackbar); 
+  }
+
   Future _getCurrencies() async {
 
     dynamic currencies = await CurrencyService().getCurrencies().catchError((onError) {
-      print('Erro ao trazer moedas.');
+      _onFail('Ocorreu um erro ao listar as moedas. Tente novamente mais tarde.');
     });
 
     setState(() {
@@ -114,6 +125,26 @@ class _ConversionPageState extends State<ConversionPage> {
     return l;
   }
 
+  bool _validateFields() {
+
+    if (_originController.text.isEmpty) {
+      _onFail('Preencha o valor a ser convertido.');
+      return false;
+    }
+
+    if (_currencyFrom == _currencyTo) {
+      _onFail('Favor selecionar duas moedas diferentes para conversão.');
+      return false;
+    }
+
+    if (double.parse(_originController.text) <= 0) {
+      _onFail('O valor a ser convertido deve ser maior que zero.');
+      return false;
+    }
+
+    return true;
+  }
+
   Widget _buildFromLabel() {
 
     return Text(
@@ -168,6 +199,7 @@ class _ConversionPageState extends State<ConversionPage> {
       labelColor: Colors.black54,
       controller: _originController,
       width: MediaQuery.of(context).size.width,
+      inputType: TextInputType.numberWithOptions(decimal: true),
     );
   }
 
@@ -175,10 +207,10 @@ class _ConversionPageState extends State<ConversionPage> {
 
     return CustomButton(
       label: 'Converter', 
-      onPressed: () {
-        _convert(_currencyFrom, _currencyTo, double.parse(_originController.text));
-      },
       width: MediaQuery.of(context).size.width,
+      onPressed: () {
+        _validateFields() ?? _convert(_currencyFrom, _currencyTo, double.parse(_originController.text));
+      },
     );
   }
 
@@ -194,8 +226,10 @@ class _ConversionPageState extends State<ConversionPage> {
 
   Widget _buildResult() {
 
+    final NumberFormat nf = NumberFormat('#,##0.00', 'pt_BR');
+
     return Text(
-      _convertedValue.toStringAsPrecision(2) ?? '',
+      nf.format(_convertedValue) ?? '',
       style: TextStyle(
         fontSize: 18,
       ),
@@ -249,7 +283,9 @@ class _ConversionPageState extends State<ConversionPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: _buildAppBar(),
-      body: _buildBody(),
+      body: SingleChildScrollView(
+        child: _buildBody(),
+      )
     );
   }
 }
